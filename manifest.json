@@ -1,0 +1,20 @@
+{
+  "name": "Archery E-sport League",
+  "short_name": "AEL",
+  "description": "Web App mobile de duel de tir à l'arc connecté à 18 m — 100% hors-ligne, 0 compte",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090f1e",
+  "theme_color": "#090f1e",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
