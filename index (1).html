@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#090f1e">
+  <title>Archery E-sport League (AEL) — V0.1</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-badge">AEL</span>
+      <span>V0.1 • Codex 12.0</span>
+    </div>
+    <div class="topbar-actions">
+      <button id="btnTheme" class="btn-chip" type="button" aria-label="Changer de thème">☀️ Soleil</button>
+      <button id="btnHome" class="btn-chip hidden" type="button" aria-label="Accueil">🏠</button>
+    </div>
+  </header>
+
+  <main id="app" class="app-container" aria-live="polite">
+    <div class="card center">Chargement d'Archery E-sport League...</div>
+  </main>
+
+  <div id="modalRoot" class="hidden"></div>
+
+  <script src="moteur.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
