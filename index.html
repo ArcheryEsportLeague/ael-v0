@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AEL V0.1 — Banc de Test Moteur Codex v12.0</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card: #151e32;
+      --border: #26334d;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --ok: #22c55e;
+      --ok-bg: rgba(34, 197, 94, 0.14);
+      --ko: #ef4444;
+      --ko-bg: rgba(239, 68, 68, 0.14);
+      --gold: #facc15;
+    }
+    body.soleil {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --muted: #475569;
+      --accent: #0284c7;
+      --ok: #15803d;
+      --ok-bg: #dcfce7;
+      --ko: #b91c1c;
+      --ko-bg: #fee2e2;
+      --gold: #ca8a04;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      line-height: 1.45;
+    }
+    .wrap { max-width: 680px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    h1 { font-size: 1.25rem; margin: 0; }
+    .subtitle { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+    .btn-theme {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .banner {
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      border: 2px solid var(--border);
+      font-weight: 700;
+      font-size: 1.05rem;
+      text-align: center;
+    }
+    .banner.ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
+    .banner.ko { background: var(--ko-bg); border-color: var(--ko); color: var(--ko); }
+    .test-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .test-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .badge {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .badge.ok { background: var(--ok-bg); color: var(--ok); }
+    .badge.ko { background: var(--ko-bg); color: var(--ko); }
+    .test-detail {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .sim-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 22px;
+    }
+    .sim-box h2 { margin: 0 0 8px 0; font-size: 1.05rem; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+    .btn-run {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #0b1120;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .sim-out {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 0.86rem;
+      white-space: pre-line;
+    }
+    footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Archery E-sport League (AEL)</h1>
+        <div class="subtitle">Brique 1 — Banc de Test Moteur Codex v12.0</div>
+      </div>
+      <button class="btn-theme" id="btnTheme" type="button">☀️ Soleil</button>
+    </header>
+
+    <div id="globalBanner" class="banner">Exécution des tests automatiques...</div>
+    <div id="testsList"></div>
+
+    <section class="sim-box">
+      <h2>🎯 Mini-simulateur de volée libre</h2>
+      <p class="subtitle" style="margin-bottom:12px;">
+        Saisis 3 flèches séparées par des virgules (ex : <strong>X, 9, 8</strong> ou <strong>10, 7, M</strong>) pour vérifier le calcul instantané du moteur.
+      </p>
+      <div class="grid2">
+        <div>
+          <label for="f1">Flèches Joueur 1</label>
+          <input id="f1" type="text" value="10, 7, 6">
+        </div>
+        <div>
+          <label for="f2">Flèches Joueur 2</label>
+          <input id="f2" type="text" value="X, 8, 8">
+        </div>
+      </div>
+      <div class="grid2">
+        <div>
+          <label for="b1">Bouclier Joueur 1</label>
+          <select id="b1">
+            <option value="0" selected>Flèche 1 (plus forte)</option>
+            <option value="1">Flèche 2</option>
+            <option value="2">Flèche 3</option>
+            <option value="">Aucun (3 Attaques)</option>
+          </select>
+        </div>
+        <div>
+          <label for="b2">Bouclier Joueur 2</label>
+          <select id="b2">
+            <option value="0">Flèche 1 (plus forte)</option>
+            <option value="1" selected>Flèche 2</option>
+            <option value="2">Flèche 3</option>
+            <option value="">Aucun (3 Attaques)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-run" id="btnSim" type="button">Calculer la volée</button>
+      <div class="sim-out" id="simOut">Appuie sur « Calculer la volée » pour tester un cas.</div>
+    </section>
+
+    <footer>AEL V0.1 — Phase 2 (Étape 2.2) • 100 % hors-ligne • Budget 0 €</footer>
+  </div>
+
+  <script src="moteur.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      // Bascule thème Sombre / Plein Soleil
+      const btnTheme = document.getElementById('btnTheme');
+      btnTheme.addEventListener('click', function () {
+        document.body.classList.toggle('soleil');
+        btnTheme.textContent = document.body.classList.contains('soleil') ? '🌙 Sombre' : '☀️ Soleil';
+      });
+
+      const M = window.AELMoteur;
+      const resultats = [];
+
+      function assert(condition, message) {
+        if (!condition) throw new Error(message);
+      }
+
+      function executerTest(numero, titre, detail, fn) {
+        try {
+          fn();
+          resultats.push({ numero, titre, detail, ok: true });
+        } catch (err) {
+          resultats.push({ numero, titre, detail: 'ERREUR : ' + err.message, ok: false });
+        }
+      }
+
+      // ----------------------------------------------------------------------
+      // SUITE OFFICIELLE DES 9 TESTS OBLIGATOIRES (PLAN DE TESTS V0.1)
+      // ----------------------------------------------------------------------
+
+      // TEST 1 : Exemple complet Chapitre 8 du Codex v12.0 (Lucas vs Anissa)
+      executerTest(
+        1,
+        'Chapitre 8 Codex v12.0 (Lucas vs Anissa) & Bilan avant armure',
+        'Rejoue les 6 volées officielles : Parade Parfaite, Bilan M1 (36 vs 44), Souffle +5, Brise-Garde, All-In réussi puis raté et K.O. final à 18 PV vs 0 PV.',
+        function () {
+          const match = M.creerMatch({
+            modeJeu: 'complet',
+            typeDuel: 'pur',
+            joueurs: [
+              { nom: 'Lucas', arme: 'classique' },
+              { nom: 'Anissa', arme: 'classique' }
+            ]
+          });
+          assert(match.joueurs[0].seuilAllIn === 29, 'Seuil Classique doit être 29');
+
+          // M1V1
+          M.resoudreVolee(match, { bouclier: 0 }, { bouclier: 1 }, [10, 7, 6], ['X', 8, 8]);
+          assert(match.joueurs[0].pv === 89, 'M1V1 Lucas doit être à 89 PV');
+          assert(match.joueurs[1].pv === 93, 'M1V1 Anissa doit être à 93 PV');
+          assert(match.joueurs[1].armureRempart === 2, 'M1V1 Anissa doit avoir +2 Rempart');
+          assert(match.joueurs[1].cransMaitrise === 1, 'M1V1 Anissa doit avoir 1 cran Maîtrise');
+          assert(M.getBilanManche(match.joueurs[0]) === 10, 'M1V1 Bilan Lucas = 10');
+          assert(M.getBilanManche(match.joueurs[1]) === 4, 'M1V1 Bilan Anissa = 4');
+
+          // M1V2 (Lucas +20 / Anissa +20 dont 2 absorbés par Rempart -> 75 PV)
+          M.resoudreVolee(match, {}, {}, [8, 6, 6], [8, 6, 6]);
+          assert(match.joueurs[0].pv === 69, 'M1V2 Lucas = 69 PV');
+          assert(match.joueurs[1].pv === 75, 'M1V2 Anissa = 75 PV');
+
+          // M1V3 (Anissa Parade Parfaite L1 -> +2 Rempart conservé, gagne M1 36 vs 44)
+          const rM1V3 = M.resoudreVolee(match, {}, { bouclier: 0 }, [8, 7, 7], [8, 7, 7]);
+          assert(match.joueurs[0].pv === 55, 'Fin M1 Lucas = 55 PV');
+          assert(match.joueurs[1].pv === 61, 'Fin M1 Anissa = 61 PV');
+          assert(rM1V3.finManche.bilans[0] === 44 && rM1V3.finManche.bilans[1] === 36, 'Bilans M1 attendus : 44 vs 36');
+          assert(match.joueurs[1].manchesGagnees === 1, 'Anissa doit mener 1-0');
+          assert(M.getArmureActive(match.joueurs[1]) === 7, 'Début M2 Anissa = 7 Armure Active (5 Souffle + 2 Rempart)');
+          assert(match.joueurs[0].jetons === 1, 'Début M2 Lucas = 1 Jeton Comeback');
+
+          // M2V1 (Brise-Garde L1 de Lucas sur Bouclier L1 d'Anissa)
+          M.resoudreVolee(match, { jeton: { type: 'brise_garde', ligne: 0 } }, { bouclier: 0 }, [10, 9, 8], [9, 8, 7]);
+          assert(match.joueurs[0].pv === 40, 'M2V1 Lucas = 40 PV');
+          assert(match.joueurs[1].pv === 41, 'M2V1 Anissa = 41 PV');
+          assert(M.getArmureActive(match.joueurs[1]) === 0, 'M2V1 Armure Anissa vidée');
+          assert(M.getBilanManche(match.joueurs[1]) === 27, 'Bilan M2 Anissa calculé AVANT armure = 27');
+
+          // M2V2 (Pari All-In réussi de Lucas : X+9+8 = 29 >= 29)
+          M.resoudreVolee(match, { allIn: true }, { bouclier: 0 }, ['X', 9, 8], [10, 8, 7]);
+          assert(match.joueurs[0].pv === 25, 'M2V2 Lucas = 25 PV');
+          assert(match.joueurs[1].pv === 7, 'M2V2 Anissa = 7 PV');
+
+          // M2V3 (Riposte All-In ratée d'Anissa : 24 < 29 -> K.O.)
+          M.resoudreVolee(match, { bouclier: 0 }, { allIn: true }, [10, 9, 8], [9, 8, 7]);
+          assert(match.joueurs[0].pv === 18, 'M2V3 Lucas = 18 PV');
+          assert(match.joueurs[0].armureRempart === 2, 'M2V3 Lucas gagne +2 Rempart sur Parade Parfaite 10 vs 4');
+          assert(match.joueurs[1].pv === 0, 'M2V3 Anissa tombe à 0 PV');
+          assert(match.statut === 'termine' && match.vainqueur === 0, 'Lucas gagne par K.O.');
+        }
+      );
+
+      // TEST 2 : Parade Parfaite stricte (0 pt refusé, Surcharge x2 validée)
+      executerTest(
+        2,
+        'Parade Parfaite stricte (refusée sur 0 pt, validée contre Surcharge x2)',
+        'Vérifie qu\'une paille (0) ou une flèche réduite à 0 par All-In raté donne 0 Rempart, mais qu\'un Bouclier 10 contre Surcharge (5x2=10) donne +2 Rempart.',
+        function () {
+          const m = M.creerMatch({
+            modeJeu: 'complet',
+            typeDuel: 'pur',
+            joueurs: [{ nom: 'A', arme: 'classique' }, { nom: 'B', arme: 'classique' }]
+          });
+          // 2a : Bouclier 8 vs Paille M (0) -> 0 Rempart
+          M.resoudreVolee(m, { bouclier: 2 }, {}, [10, 9, 8], [10, 9, 'M']);
+          assert(m.joueurs[0].armureRempart === 0, 'Parade contre paille 0 ne doit donner 0 Rempart');
+
+          // 2b : Bouclier 8 vs flèche à 1 réduite à 0 par All-In raté -> 0 Rempart
+          M.resoudreVolee(m, { bouclier: 2 }, { allIn: true }, [9, 8, 8], [5, 5, 1]);
+          assert(m.joueurs[0].armureRempart === 0, 'Parade contre attaque réduite à 0 (All-In raté) = 0 Rempart');
+
+          // 2c : Bouclier 10 vs Surcharge x2 sur 5 (=10) -> Parade Parfaite (+2 Rempart)
+          m.joueurs[1].jetons = 1;
+          M.resoudreVolee(m, { bouclier: 0 }, { jeton: { type: 'surcharge', ligne: 0 } }, [10, 8, 7], [5, 5, 5]);
+          assert(m.joueurs[0].armureRempart === 2, 'Parade contre Surcharge x2 (10 >= 10) doit donner +2 Rempart');
+        }
+      );
+
+      // TEST 3 : Surplus de Jeton (> 2) converti en +3 Rempart HORS Bilan de Manche
+      executerTest(
+        3,
+        'Conversion automatique du surplus de Jeton (> 2) en +3 Rempart hors Bilan',
+        'Un joueur qui atteint 3+ Jetons reste plafonné à 2 Jetons et convertit chaque surplus en +3 Rempart sans jamais fausser le Bilan de Manche.',
+        function () {
+          const m = M.creerMatch({
+            modeJeu: 'complet',
+            typeDuel: 'pur',
+            joueurs: [{ nom: 'A', arme: 'classique' }, { nom: 'B', arme: 'classique' }]
+          });
+          // M1 : A perd M1 (2,2,2 vs 3,3,3 -> A=72 PV / B=81 PV, A reçoit +1 Jeton Comeback)
+          M.resoudreVolee(m, {}, {}, [2, 2, 2], [3, 3, 3]);
+          M.resoudreVolee(m, {}, {}, [2, 2, 2], [3, 3, 3]);
+          M.resoudreVolee(m, {}, {}, [2, 2, 2], [3, 3, 3]);
+          assert(m.manche === 2 && m.joueurs[0].jetons === 1, 'A doit avoir 1 Jeton en M2');
+
+          // M2 : B a déjà 2 jetons en réserve ; A gagne M2 (3,3,3 vs 2,2,2 -> A=54 PV / B=59 PV) -> M3 décisive
+          m.joueurs[1].jetons = 2;
+          M.resoudreVolee(m, {}, {}, [3, 3, 3], [2, 2, 2]);
+          M.resoudreVolee(m, {}, {}, [3, 3, 3], [2, 2, 2]);
+          M.resoudreVolee(m, {}, {}, [3, 3, 3], [2, 2, 2]);
+          // Entrée en M3 (1-1) : B perd M2 (+1 Comeback -> surplus +3) ET reçoit Adrénaline (+1 -> surplus +3) = +6 Rempart !
+          assert(m.manche === 3, 'On doit être en Manche 3 décisive');
+          assert(m.joueurs[1].jetons === 2, 'B reste plafonné à 2 Jetons');
+          assert(m.joueurs[1].armureRempart === 6, 'B doit avoir reçu +6 Rempart (2 jetons en surplus x 3)');
+          assert(M.getBilanManche(m.joueurs[1]) === 0, 'Le Rempart de surplus ne compte JAMAIS dans le Bilan de Manche');
+        }
+      );
+
+      // TEST 4 : Plafond strict à 1 Jeton de Maîtrise/match + cran X inconditionnel
+      executerTest(
+        4,
+        'Plafond 1 Jeton de Maîtrise/match & cran X Franc inconditionnel',
+        'Un X sur Bouclier brisé par Brise-Garde et des X sur All-In raté chargent la jauge ; au-delà de 3 X Francs (ex. 6 X), aucun 2e Jeton n\'est attribué.',
+        function () {
+          const m = M.creerMatch({
+            modeJeu: 'complet',
+            typeDuel: 'pur',
+            joueurs: [{ nom: 'A', arme: 'classique' }, { nom: 'B', arme: 'classique' }]
+          });
+          m.joueurs[1].jetons = 1;
+          // Volée 1 : A joue un Bouclier X (12) fracassé par Brise-Garde de B -> +1 cran quand même !
+          M.resoudreVolee(m, { bouclier: 0 }, { jeton: { type: 'brise_garde', ligne: 0 } }, ['X', 6, 6], [8, 6, 6]);
+          assert(m.joueurs[0].cransMaitrise === 1, 'X sur Bouclier brisé doit donner +1 cran');
+
+          // Volée 2 : A rate son All-In avec 2 X + M (24 < 29) -> +2 crans -> atteint 3/3 -> +1 Jeton de Maîtrise !
+          M.resoudreVolee(m, { allIn: true }, {}, ['X', 'X', 'M'], [6, 6, 6]);
+          assert(m.joueurs[0].jetonMaitriseObtenu === true, 'Jeton de Maîtrise obtenu à 3 X');
+          assert(m.joueurs[0].jetons === 1, 'A possède 1 Jeton');
+
+          // Volée 3 : A tire encore 3 X Francs (6 X au total) -> 0 nouveau Jeton !
+          M.resoudreVolee(m, {}, {}, ['X', 'X', 'X'], [5, 5, 5]);
+          assert(m.joueurs[0].jetons === 1, 'Plafond strict : aucun 2e Jeton de Maîtrise malgré 6 X');
+        }
+      );
+
+      // TEST 5 : Pari All-In (Seuils 34/29/26, Calib + 3 plafonné, Double Pari, Pénalité)
+      executerTest(
+        5,
+        'Pari All-In : Seuils 34/29/26, Duel Équilibré (Calib + 3) & Double Pari',
+        'Vérifie les 3 seuils FFTA 2026, le plafonnement en Équilibré, le Double Pari dès M1V1 et la vérification après pénalité à 0 pt.',
+        function () {
+          assert(M.calculerSeuilAllIn('poulies', 'pur') === 34, 'Seuil Poulies = 34');
+          assert(M.calculerSeuilAllIn('classique', 'pur') === 29, 'Seuil Classique = 29');
+          assert(M.calculerSeuilAllIn('arc_nu', 'pur') === 26, 'Seuil Arc Nu = 26');
+          assert(M.calculerSeuilAllIn('classique', 'equilibre', 62) === 23, 'Calib 62 -> floor(20.66)+3 = 23');
+          assert(M.calculerSeuilAllIn('classique', 'equilibre', 87) === 29, 'Calib 87 -> plafonné à 29');
+
+          // Double Pari simultané dès M1V1 + flèche pénalisée à 0 pt
+          const m = M.creerMatch({
+            modeJeu: 'complet',
+            typeDuel: 'pur',
+            joueurs: [{ nom: 'Poulie', arme: 'poulies' }, { nom: 'ArcNu', arme: 'arc_nu' }]
+          });
+          // Poulie tire X, X, 10 (34 >= 34 réussi), ArcNu tire X(pénalisé 0), 10, 9 -> 19 < 26 raté !
+          const rep = M.resoudreVolee(
+            m,
+            { allIn: true },
+            { allIn: true },
+            ['X', 'X', 10],
+            [{ code: 'X', penaliteAnnulee: true }, 10, 9]
+          );
+          assert(rep.allIn[0].reussi === true, 'Poulie 34 >= 34 doit réussir');
+          assert(rep.allIn[1].reussi === false, 'ArcNu avec X annulé (19 < 26) doit rater');
+          // ArcNu prend 34 (flèches) + 15 (All-In Poulie) + 5 (propre pénalité) = 54 PV -> 45 PV
+          assert(m.joueurs[1].pv === 45, 'ArcNu doit passer à 45 PV (99 - 54)');
+          // Poulie prend floor(10/2)=5 + floor(9/2)=4 + 0 = 9 PV -> 90 PV
+          assert(m.joueurs[0].pv === 90, 'Poulie doit passer à 90 PV (99 - 9)');
+        }
+      );
+
+      // TEST 6 : Plafond armure d'équilibrage 30 pts/manche & 0 Souffle en Manche 3
+      executerTest(
+        6,
+        'Duel Équilibré : Plafond 30 pts/manche, Alerte & 0 Souffle en Manche 3',
+        'Un écart de 42 pts sur 9 flèches plafonne l\'armure à 30 pts/manche, déclenche l\'alerte de rapprochement, et la Manche 3 démarre à 0 Souffle.',
+        function () {
+          const m = M.creerMatch({
+            modeJeu: 'complet',
+            typeDuel: 'equilibre',
+            joueurs: [
+              { nom: 'Expert', arme: 'classique', calibration: 96 },
+              { nom: 'Débutant', arme: 'classique', calibration: 54 }
+            ]
+          });
+          assert(m.alerteRapprochement === true, 'Écart 42 > 30 doit déclencher l\'alerte rapprochement');
+          assert(m.joueurs[1].trancheEquilibrage === 30, 'Armure d\'équilibrage plafonnée à 30');
+          assert(m.joueurs[1].armureEquilibrage === 30, 'Débutant démarre M1 avec 30 d\'armure');
+
+          // On joue M1 (gagnée par Expert) puis M2 (gagnée par Débutant) -> Manche 3 décisive
+          for (let v = 0; v < 3; v++) M.resoudreVolee(m, {}, {}, [10, 10, 10], [2, 2, 2]);
+          assert(m.manche === 2 && m.joueurs[0].armureSouffle === 5, 'M2 : Expert reçoit +5 Souffle');
+          assert(m.joueurs[1].armureEquilibrage === 30, 'M2 : Débutant récupère sa tranche de 30');
+
+          for (let v = 0; v < 3; v++) M.resoudreVolee(m, {}, {}, [3, 3, 3], [6, 6, 6]);
+          assert(m.manche === 3, 'Passage en Manche 3 (1-1)');
+          assert(m.joueurs[0].armureSouffle === 0 && m.joueurs[1].armureSouffle === 0, 'M3 : 0 Souffle de Victoire pour les deux archers !');
+        }
+      );
+
+      // TEST 7 : Double K.O. & Flèche de K.O. (hors combat, double 0 = retirage, X bat 10)
+      executerTest(
+        7,
+        'Double K.O. & Flèche de K.O. (hors combat, X bat 10, double 0 = retirage)',
+        'Si les deux tombent à 0 PV ensemble, la Flèche de K.O. tranche le match entier sans toucher aux PV ni à la Maîtrise.',
+        function () {
+          const m = M.creerMatch({
+            modeJeu: 'complet',
+            typeDuel: 'pur',
+            joueurs: [{ nom: 'A', arme: 'classique' }, { nom: 'B', arme: 'classique' }]
+          });
+          m.joueurs[0].pv = 15;
+          m.joueurs[1].pv = 15;
+          M.resoudreVolee(m, {}, {}, [8, 8, 8], [8, 8, 8]);
+          assert(m.statut === 'fleche_ko_match', 'Double K.O. doit passer en statut fleche_ko_match');
+
+          const ret = M.resoudreFlecheKO(m, 'M', 'M');
+          assert(ret.retirage === true, 'Double 0 doit imposer un retirage');
+
+          const fin = M.resoudreFlecheKO(m, 'X', 10);
+          assert(fin.retirage === false && fin.gagnant === 0, 'X Franc (12) doit battre 10');
+          assert(m.statut === 'termine' && m.vainqueur === 0 && m.motifVictoire === 'double_ko_fleche', 'A gagne le match sur Flèche de K.O.');
+          assert(m.joueurs[0].cransMaitrise === 0, 'Flèche de K.O. hors combat = 0 cran Maîtrise');
+        }
+      );
+
+      // TEST 8 : Bascule fluide Mode Découverte <-> Mode Complet v12.0
+      executerTest(
+        8,
+        'Mode Découverte par défaut & raccourci vers Mode Complet v12.0',
+        'En Mode Découverte, All-In et Jetons sont bloqués ; la bascule vers Mode Complet les débloque immédiatement sans perdre la partie.',
+        function () {
+          const m = M.creerMatch({
+            joueurs: [{ nom: 'Démo 1', arme: 'classique' }, { nom: 'Démo 2', arme: 'classique' }]
+          });
+          assert(m.modeJeu === 'decouverte', 'Mode Découverte actif par défaut');
+          assert(M.validerProgrammation(m, 0, { allIn: true }).valide === false, 'All-In refusé en Mode Découverte');
+
+          // Bascule instantanée (raccourci V0.1)
+          M.basculerMode(m, 'complet');
+          assert(M.validerProgrammation(m, 0, { allIn: true }).valide === true, 'All-In immédiatement autorisé en Mode Complet');
+        }
+      );
+
+      // TEST 9 : Tri décroissant automatique & Bouton « Corriger la volée »
+      executerTest(
+        9,
+        'Tri décroissant automatique & Droit à l\'erreur (« Corriger la volée »)',
+        'Vérifie le tri automatique [6, X, 9] -> [X, 9, 6] et la restauration exacte de l\'état avant la dernière volée.',
+        function () {
+          const m = M.creerMatch({
+            modeJeu: 'complet',
+            typeDuel: 'pur',
+            joueurs: [{ nom: 'A', arme: 'classique' }, { nom: 'B', arme: 'classique' }]
+          });
+          const tri = M.trierVolee([6, 'X', 9]);
+          assert(tri[0].code === 'X' && tri[1].code === '9' && tri[2].code === '6', 'Tri décroissant attendu : X, 9, 6');
+
+          M.resoudreVolee(m, { bouclier: 0 }, {}, [6, 'X', 9], [8, 8, 8]);
+          assert(m.joueurs[0].pv < 99 && m.volee === 2, 'La volée 1 a bien modifié l\'état');
+
+          const corrige = M.annulerDerniereVolee(m);
+          assert(corrige.joueurs[0].pv === 99 && corrige.joueurs[1].pv === 99 && corrige.volee === 1, 'Annulation exacte restaurée');
+        }
+      );
+
+      // Affichage des résultats
+      const nbOk = resultats.filter(function (r) { return r.ok; }).length;
+      const banner = document.getElementById('globalBanner');
+      if (nbOk === resultats.length) {
+        banner.className = 'banner ok';
+        banner.textContent = '✅ ' + nbOk + ' / ' + resultats.length + ' TESTS RÉUSSIS — Moteur Codex v12.0 certifié !';
+      } else {
+        banner.className = 'banner ko';
+        banner.textContent = '❌ ' + nbOk + ' / ' + resultats.length + ' tests réussis — Bug détecté.';
+      }
+
+      const listEl = document.getElementById('testsList');
+      resultats.forEach(function (r) {
+        const card = document.createElement('div');
+        card.className = 'test-card';
+        card.innerHTML =
+          '<div class="test-head">' +
+            '<span>Test ' + r.numero + ' — ' + r.titre + '</span>' +
+            '<span class="badge ' + (r.ok ? 'ok' : 'ko') + '">' + (r.ok ? 'OK' : 'ÉCHEC') + '</span>' +
+          '</div>' +
+          '<div class="test-detail">' + r.detail + '</div>';
+        listEl.appendChild(card);
+      });
+
+      // Mini-simulateur interactif
+      document.getElementById('btnSim').addEventListener('click', function () {
+        const out = document.getElementById('simOut');
+        try {
+          const f1 = document.getElementById('f1').value.split(',').map(function (s) { return s.trim(); });
+          const f2 = document.getElementById('f2').value.split(',').map(function (s) { return s.trim(); });
+          const b1Val = document.getElementById('b1').value;
+          const b2Val = document.getElementById('b2').value;
+          const m = M.creerMatch({
+            modeJeu: 'complet',
+            typeDuel: 'pur',
+            joueurs: [{ nom: 'Joueur 1', arme: 'classique' }, { nom: 'Joueur 2', arme: 'classique' }]
+          });
+          const rep = M.resoudreVolee(
+            m,
+            { bouclier: b1Val === '' ? null : Number(b1Val) },
+            { bouclier: b2Val === '' ? null : Number(b2Val) },
+            f1,
+            f2
+          );
+          const lignesTxt = rep.lignes.map(function (l) {
+            return 'Ligne ' + l.ligne + ' (' + l.fleches[0].code + ' vs ' + l.fleches[1].code + ') : ' + l.resume;
+          }).join('\n');
+          out.textContent =
+            lignesTxt +
+            '\n\nRésultat après volée :' +
+            '\n• Joueur 1 : ' + m.joueurs[0].pv + ' PV | Armure Active : ' + M.getArmureActive(m.joueurs[0]) + ' | Bilan : ' + M.getBilanManche(m.joueurs[0]) +
+            '\n• Joueur 2 : ' + m.joueurs[1].pv + ' PV | Armure Active : ' + M.getArmureActive(m.joueurs[1]) + ' | Bilan : ' + M.getBilanManche(m.joueurs[1]);
+        } catch (err) {
+          out.textContent = 'Erreur de saisie : ' + err.message;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
